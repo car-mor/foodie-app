@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipes</title>
+  {% load django_bootstrap5 %}
+  {% bootstrap_css %}
+  {% load static %}
+  {% bootstrap_javascript %}
+  <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}">
+
+<style>
+    body {
+      background-color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1 0 auto;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .footer {
+      flex-shrink: 0;
+      background: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      border-top: 1px solid #dee2e6;
+      margin-top: 2rem;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      color: #2196c8ff;
+    }
+    .navbar-brand:hover {
+      color: #5facf4ff;
+    }
+    .welcome-msg {
+      margin: 0 1rem 0 0;
+      color: #495057;
+      font-weight: 500;
+      align-self: center;
+    }
+    .nav-link {
+      font-weight: 500;
+      padding: 0.5rem 1rem !important;
+      margin: 0 0.25rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover {
+      background-color: #f0f8fdff;
+      color: #2196c8ff !important;
+    }
+    .nav-link.active {
+      background-color: #2196c8ff;
+      color: #fff !important;
+    }
+    .nav-link.active:hover {
+      background-color: #71d1fdff;
+    }
+    .btn-logout {
+      font-weight: 500;
+      padding: 0.5rem 1rem !important;
+      margin: 0 0.25rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      border: none;
+      background-color: transparent;
+      color: #dc2626 !important;
+    }
+    .btn-logout:hover {
+      background-color: #fee2e2;
+      color: #b91c1c !important;
+    }
+    .search-form-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+    }
+    .search-form-wrapper input {
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      padding: 0.5rem 0.75rem;
+    }
+    .search-form-wrapper input:focus {
+      border-color: #2196c8ff;
+      box-shadow: 0 0 0 3px rgba(60, 200, 232, 0.1);
+    }
+    .search-form-wrapper button {
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      background-color: #52aee7ff;
+      border-color: #2196c8ff;
+      transition: all 0.3s ease;
+    }
+    .search-form-wrapper button:hover {
+      background-color: #63d6f0ff;
+      border-color: #25a1d2ff;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'foodie_app:index' %}">Foodie</a>
+
+<form class="d-flex search-form-wrapper" action="{% url 'recipes:search_results' %}" method="get">
+    {% csrf_token %}
+    {% bootstrap_field search_form.query %}
+    <button type="submit">Search</button>
+</form>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="{% url 'foodie_app:index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if request.resolver_match.url_name == 'add_recipe_no_genre' %} active{% endif %}" href="{% url 'foodie_app:add_recipe_no_genre' %}">Add Recipe</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if request.resolver_match.url_name == 'all_recipes' %} active{% endif %}" href="{% url 'recipes:all_recipes' %}">All Recipes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if request.resolver_match.url_name == 'favorite_recipes' %} active{% endif %}" href="{% url 'recipes:favorite_recipes' %}">Favorite Recipes</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item d-flex align-items-center">
+            {% if user.profile.profile_photo %}
+              <img src="{{ user.profile.profile_photo.url }}" alt="Profile Picture" class="rounded-circle me-2" style="width:32px; height:32px; object-fit:cover;">
+            {% else %}
+              {% load static %}
+              <img src="{% static 'accounts/images/default_profile.jpg' %}" alt="Profile Picture" class="rounded-circle me-2" style="width:32px; height:32px; object-fit:cover;">
+            {% endif %}
+            <span class="welcome-msg">Welcome, {{ user.username }}!</span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.resolver_match.url_name == 'edit_user_profile' %} active{% endif %}" href="{% url 'accounts:edit_user_profile' %}">Edit Profile</a>
+          </li>
+          <li class="nav-item">
+            <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">{% csrf_token %}
+                <button type="submit" class="nav-link btn btn-link text-danger d-flex justify-content-center align-items-center" style="width: 100%;">Logout</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.resolver_match.url_name == 'register' %} active{% endif %}" href="{% url 'accounts:register' %}">Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <h1 class="my-4">Welcome to Foodie</h1>
+    <p class="lead">Your one-stop solution for all your recipe needs.</p>
+    {% block content %}
+    {% endblock content %}
+  </div>
+</main>
+<footer class="footer">
+  <div class="container">
+    <p class="mb-0 text-muted">&copy; {{ now|date:"Y" }} Foodie. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

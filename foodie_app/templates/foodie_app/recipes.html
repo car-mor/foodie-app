@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block content %}
+<div>
+    <h2>Recipes List</h2>
+    <h3>Under Category {{ category.name }}</h3>
+    {% comment %} Using card of bootstrap 5 {% endcomment %}
+    <a href="{% url 'foodie_app:add_recipe_with_genre' category.id %}">Add New Recipe</a>
+    {% for recipe in recipes %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+        <h4 class="card-title"><a href="{% url 'recipes:recipe_detail' recipe.id %}">{{ recipe.title }}</a></h4>
+        <h5> Description: </h5>
+        <p class="card-subtitle">{{ recipe.description }}</p>
+        <br>
+        <h6 class="card-subtitle mb-2 text-muted fst-italic">Added {{ recipe.date_added|date:"M d, Y H:i" }}</h6>
+       
+       
+        <div class="row align-items-center mt-1">
+            <div class="col">
+                <small><a href="{% url 'recipes:recipe_detail' recipe.id %}">{{ recipe.title }}</a></small>
+            </div>
+            <div class="col-auto">
+               {% if recipe.user.profile.profile_photo %}
+                <img src="{{ recipe.user.profile.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" width="30" height="30">
+               {% else %}
+                <img src="{% static 'accounts/images/default_profile.jpg' %}" alt="Default Profile Photo" class="rounded-circle" width="30" height="30">
+               {% endif %}
+               <small class="ms-2">{{ recipe.user.username }}</small>
+            </div>
+        </div>
+        </div>
+    </div>
+    <br>
+    {% empty %}
+        <p class="card-text">No recipes available in this category.</p>
+    {% endfor %}
+</div>
+{% endblock content %}

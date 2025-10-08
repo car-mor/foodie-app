@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="card-title mb-3 text-danger">Delete Recipe</h2>
+            <hr>
+            <p>Are you sure you want to delete the recipe <strong>{{ recipe.title }}</strong>?</p>
+            {% if recipe.image %}
+                <div class="d-flex justify-content-center mb-3">
+                    <img src="{{ recipe.image.url }}" class="img-fluid rounded" alt="{{ recipe.title }}" width="300" height="300">
+                </div>
+            {% endif %}
+            <p class="mb-1">Created by: <strong>{{ recipe.user.username }}</strong></p>
+            <p class="card-text text-muted">{{ recipe.description }}</p>
+            <form method="post" action="">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, delete</button>
+                <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

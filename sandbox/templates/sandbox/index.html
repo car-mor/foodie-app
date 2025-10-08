@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+
+
+    {% comment %} <h1>Hello there {{ data.name }}!</h1>
+    <p>Welcome to the sandbox index page.</p>
+    <ul>
+        <li>Age: {{ data.age }}</li>
+        <li>City: {{ data.city }}</li>
+        <li>Hobbies:
+            <ul>
+                {% for hobby in data.hobbies %}
+                    <li>{{ hobby }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>{% endcomment %}
+    <h1>Food List</h1>
+    {% comment %} <ul>
+        {% for food in foods %}
+            <li>{{ food }}</li>
+        {% endfor %}
+    </ul> {% endcomment %}
+
+{% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    {% if recipes %}
+    <p> We have {{ recipes|length }} recipes available:</p>
+        <ul>
+            {% for recipe in recipes %}
+                <li>{{ recipe.title }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>No recipes available.</p>
+    {% endif %}
+
+    <h2>Recipe List</h2>
+    {% comment %} {% if object_list %} {% endcomment %}
+    {% if recipes %}
+        <ul>
+            {% comment %} {% for recipe in object_list %} {% endcomment %}
+            {% for recipe in recipes %}
+                <li> <a href="{% url 'sandbox:recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recipes available.</p>
+    {% endif %}
+{% endblock content %}
+
+

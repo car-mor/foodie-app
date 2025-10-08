@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    <h2>Add Recipe</h2>
+
+<div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Save Recipe</button>
+    </form>
+</div>
+{% endblock content %}
