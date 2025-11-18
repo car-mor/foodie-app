@@ -34,17 +34,17 @@
     </div>
 {% endif %}
     {% if recipes %}
-    <p> We have {{ recipes|length }} recipes available:</p>
+    <p> Tenemos {{ recipes|length }} recetas disponibles:</p>
         <ul>
             {% for recipe in recipes %}
                 <li>{{ recipe.title }}</li>
             {% endfor %}
         </ul>
         {% else %}
-            <p>No recipes available.</p>
+            <p>No hay recetas disponibles.</p>
     {% endif %}
 
-    <h2>Recipe List</h2>
+    <h2>Lista de Recetas</h2>
     {% comment %} {% if object_list %} {% endcomment %}
     {% if recipes %}
         <ul>
@@ -55,7 +55,7 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>No recipes available.</p>
+        <p>No hay recetas disponibles.</p>
     {% endif %}
 {% endblock content %}
 

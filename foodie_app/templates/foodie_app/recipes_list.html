@@ -4,18 +4,20 @@
 
 {% block content %}
 <div>
-    <h2>Recipes List</h2>
-    <h3>Under Category {{ category.name }}</h3>
+    <h2>Lista de recetas</h2>
+    <h3>En la Subcategoría de "{{ subcategory.name }}"</h3>
     {% comment %} Using card of bootstrap 5 {% endcomment %}
-    <a href="{% url 'foodie_app:add_recipe_with_genre' category.id %}">Add New Recipe</a>
+    <a href="{% url 'foodie_app:add_recipe_to_subcategory' subcategory.id %}">
+    <p style="color: #2196c8ff;">Agregar nueva receta a {{ subcategory.name }}</p>
+</a>
     {% for recipe in recipes %}
     <div class="card" style="width: 18rem;">
         <div class="card-body">
-        <h4 class="card-title"><a href="{% url 'recipes:recipe_detail' recipe.id %}">{{ recipe.title }}</a></h4>
-        <h5> Description: </h5>
+        <h4 class="card-title text-center"><a href="{% url 'recipes:recipe_detail' recipe.id %}" style="color: #2196c8ff;">{{ recipe.title }}</a></h4>
+        <h5> Descripción: </h5>
         <p class="card-subtitle">{{ recipe.description }}</p>
         <br>
-        <h6 class="card-subtitle mb-2 text-muted fst-italic">Added {{ recipe.date_added|date:"M d, Y H:i" }}</h6>
+        <h6 class="card-subtitle mb-2 text-muted fst-italic">Agregado el {{ recipe.date_added|date:"M d, Y H:i" }}</h6>
        
        
         <div class="row align-items-center mt-1">
@@ -35,7 +37,7 @@
     </div>
     <br>
     {% empty %}
-        <p class="card-text">No recipes available in this category.</p>
+        <p class="card-text">No hay recetas disponibles en esta categoría.</p>
     {% endfor %}
 </div>
 {% endblock content %}

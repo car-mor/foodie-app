@@ -1,7 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.urls import reverse
-from foodie_app.models import Category
+
+from foodie_app.models import Category, Subcategory
+
 
 # Create your models here.
 class Recipe(models.Model):
@@ -9,14 +11,23 @@ class Recipe(models.Model):
     description = models.TextField(null=True, blank=True)
     ingredients = models.TextField()
     directions = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE) # many-to-one relationship, if deleted category, delete recipes
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE
+    )  # many-to-one relationship, if deleted category, delete recipes
+    subcategory = models.ForeignKey(
+        Subcategory, on_delete=models.CASCADE, null=True, blank=True
+    )  # many-to-one relationship, if deleted subcategory, delete recipes
     date_added = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='recipes') # many-to-one relationship, if deleted user, delete recipes
-    image = models.ImageField(upload_to='recipe_images/', null=True, blank=True)
-    favorited_by = models.ManyToManyField(User, related_name='favorite_recipes', blank=True)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, related_name="recipes"
+    )  # many-to-one relationship, if deleted user, delete recipes
+    image = models.ImageField(upload_to="recipe_images/", null=True, blank=True)
+    favorited_by = models.ManyToManyField(
+        User, related_name="favorite_recipes", blank=True
+    )
 
     def __str__(self):
         return self.title
-    
+
     def get_absolute_url(self):
-        return reverse('recipes:recipe_detail', args=[self.id])
+        return reverse("recipes:recipe_detail", args=[self.id])

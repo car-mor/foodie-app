@@ -7,13 +7,13 @@
     <div class="card shadow">
         <div class="card-body">
             <h2 class="card-title mb-3">
-                {% if recipe %}Edit Recipe{% else %}Add Recipe{% endif %}
+                {% if recipe %}Editar receta{% else %}Agregar receta{% endif %}
             </h2>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 <button type="submit" class="btn btn-success mt-3">
-                    {% if recipe %}Update Recipe{% else %}Create Recipe{% endif %}
+                    {% if recipe %}Actualizar receta{% else %}Crear receta{% endif %}
                 </button>
                 <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-secondary mt-3 ms-2">Cancel</a>
             </form>

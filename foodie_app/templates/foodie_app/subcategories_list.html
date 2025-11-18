@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<h2>Subcategorías de: {{ category.name }}</h2>
+
+{% for subcategory in subcategories %}
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h4 class="card-title">
+            <a href="{% url 'foodie_app:subcategory_recipes' subcategory.id %}" class="text-decoration-none" style="color: #2196c8ff;">
+                {{ subcategory.name }}
+            </a>
+        </h4>
+        <p class="card-subtitle">Descripción: {{ subcategory.description }}</p>
+    </div>
+</div>
+<br>
+{% empty %}
+    <p class="card-text">No hay subcategorías definidas aún para esta categoría.</p>
+{% endfor %}
+{% endblock content %}

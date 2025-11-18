@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Favorite Recipes</h2>
+    <h2 class="mb-4">Recetas favoritas</h2>
     <div class="row">
         {% if favorite_recipes.exists %}
 
@@ -11,28 +11,30 @@
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        <h5 class="card-title text-center" style="color: #2196c8ff;">Título: {{ recipe.title }}</h5>
                         {% if recipe.image %}
                             <img src="{{ recipe.image.url }}" class="card-img-top mb-3" alt="{{ recipe.title }}" width="100%" height="200">
                         {% endif %}
-                        <p class="card-text">{{ recipe.description }}</p>
-                        <p class="card-text">Created by: {{ recipe.user.username }}</p>
-                        <p class="card-text"><small class="text-muted">Added on {{ recipe.date_added|date:"M d, Y H:i" }}</small></p>
-                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary">View Details</a>
+                        <p class="card-text">Descripción: {{ recipe.description }}</p>
+                        <h6>Categoría: {{ recipe.category.name }}</h6>
+                        <p>Subcategoría: {{ recipe.subcategory.name }}</p>
+                        <p class="card-text">Creado por: {{ recipe.user.username }}</p>
+                        <p class="card-text"><small class="text-muted">Agregado el {{ recipe.date_added|date:"M d, Y H:i" }}</small></p>
+                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary">Ver detalles</a>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12">
                 <div class="alert alert-info" role="alert">
-                    No favorite recipes available.
+                    No hay recetas favoritas disponibles.
                 </div>
             </div>
         {% endfor %}
         {% else %}
             <div class="col-12">
                 <div class="alert alert-info" role="alert">
-                    You have no favorite recipes yet. Start adding some!
+                    Aún no tienes recetas favoritas. ¡Comienza a agregar algunas!
                 </div>
             </div>
 

@@ -2,13 +2,13 @@
 {% block content %}
 
 {% if visits %}
-    <p>You have visited this page {{ visits }} time{{ visits|pluralize }}.</p>
+    <p>Has visitado esta página {{ visits }} vez{{ visits|pluralize:"es" }}.</p>
 {% endif %}
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit Feedback</button>
+    <button type="submit">Enviar Comentarios</button>
 </form>
 
 

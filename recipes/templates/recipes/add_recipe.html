@@ -2,21 +2,136 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-        {% block page_header %}
-    <h2>Add a new Recipe</h2>
+    {% block page_header %}
+        <h2>Agregar una nueva receta</h2>
+    {% endblock page_header %}
 
-        {% endblock page_header %}
-{% if category %}to {{ category.name }}{% endif %}
-<div>
-    {% comment %} <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button>Save Recipe</button>
-    </form> {% endcomment %}
+    <div class="mb-3">
+        {% if lock_fields %}
+            <p>
+                Receta para la categoría <strong>{{ category.name }}</strong> en la subcategoría <strong>{{ subcategory.name }}</strong>.
+                (La categoría y subcategoría se asignarán automáticamente).
+            </p>
+        {% endif %}
+    </div>
+
+    <div>
         <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% bootstrap_button "Save Recipe" button_type="submit" %}
-    </form>
-</div>
+            {% csrf_token %}
+
+            {% if not lock_fields %}
+                <div class="alert alert-info">
+                    Selecciona primero una <strong>Categoría</strong> para habilitar las <strong>Subcategorías</strong> relacionadas.
+                </div>
+                
+                {# Renderizar Category y Subcategory usando solo la variable #}
+                <div class="mb-3">
+                    {{ form.category.label_tag }}
+                    {# 🚨 CORRECCIÓN: Usar {{ form.category }} y delegar los attrs a forms.py #}
+                    {{ form.category }} 
+                    {% for error in form.category.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.subcategory.label_tag }}
+                    {# 🚨 CORRECCIÓN: Usar {{ form.subcategory }} #}
+                    {{ form.subcategory }}
+                    {% for error in form.subcategory.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                {# Renderizar el resto de los campos con {% bootstrap_field %} #}
+                {% for field in form %}
+                    {% if field.name != 'category' and field.name != 'subcategory' %}
+                        {% bootstrap_field field %}
+                    {% endif %}
+                {% endfor %}
+
+            {% else %}
+                {# Flujo con contexto: Usar {% bootstrap_form form %} ya que los campos C/S están excluidos/ocultos #}
+                {% bootstrap_form form %}
+            {% endif %}
+
+            {% bootstrap_button "Guardar receta" button_type="submit" %}
+        </form>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# 3. JAVASCRIPT/AJAX para el Flujo Sin Contexto #}
+    {# ---------------------------------------------------------------- #}
+    {% if not lock_fields %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // IDs de los selects (deben coincidir con el HTML)
+            const categorySelect = document.getElementById('id_category'); 
+            const subcategorySelect = document.getElementById('id_subcategory');
+            
+            // Valor inicial de subcategoría (en caso de error de POST)
+            const initialSubcategoryId = subcategorySelect.value;
+            
+            // 1. Inicialización (Deshabilitar Subcategoría)
+            subcategorySelect.disabled = true; 
+            subcategorySelect.innerHTML = '<option value="">Primero selecciona una Categoría</option>';
+
+            // Si hay una categoría seleccionada (por un POST fallido), cargar subcategorías
+            if (categorySelect.value) {
+                loadSubcategories(categorySelect.value, initialSubcategoryId);
+            }
+
+            // 2. Escuchar el cambio en la Categoría
+            categorySelect.addEventListener('change', function() {
+                const categoryId = this.value;
+                
+                if (categoryId) {
+                    loadSubcategories(categoryId);
+                } else {
+                    // Si se deselecciona la Categoría
+                    subcategorySelect.disabled = true;
+                    subcategorySelect.innerHTML = '<option value="">Primero selecciona una Categoría</option>';
+                }
+            });
+
+            // 3. Función AJAX para cargar Subcategorías
+            function loadSubcategories(categoryId, selectedSubcategoryId = null) {
+                // La URL debe ser la que definimos en urls.py
+                const url = "{% url 'foodie_app:ajax_load_subcategories' %}";
+                const params = new URLSearchParams({
+                    'category_id': categoryId
+                });
+
+                fetch(`${url}?${params}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpiar y rellenar el select de Subcategoría
+                        subcategorySelect.innerHTML = '<option value="">Selecciona una Subcategoría</option>';
+                        
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            
+                            // Mantener la selección después de un POST fallido
+                            if (selectedSubcategoryId && String(item.id) === String(selectedSubcategoryId)) {
+                                option.selected = true;
+                            }
+                            
+                            subcategorySelect.appendChild(option);
+                        });
+                        
+                        // Habilitar/Deshabilitar el select basado en si hay resultados
+                        if (data.length > 0) {
+                            subcategorySelect.disabled = false;
+                        } else {
+                             subcategorySelect.disabled = true;
+                             subcategorySelect.innerHTML = '<option value="">No hay Subcategorías en esta Categoría</option>';
+                        }
+                    })
+                    .catch(error => console.error('Error al cargar subcategorías:', error));
+            }
+        });
+    </script>
+    {% endif %}
 {% endblock content %}

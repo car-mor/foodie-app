@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recipes</title>
+  <title>Recetas</title>
   {% load django_bootstrap5 %}
   {% bootstrap_css %}
   {% load static %}
@@ -116,7 +116,7 @@
 <form class="d-flex search-form-wrapper" action="{% url 'recipes:search_results' %}" method="get">
     {% csrf_token %}
     {% bootstrap_field search_form.query %}
-    <button type="submit">Search</button>
+    <button type="submit">Buscar</button>
 </form>
 
 
@@ -126,16 +126,16 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="{% url 'foodie_app:index' %}">Home</a>
+          <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="{% url 'foodie_app:index' %}">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'add_recipe_no_genre' %} active{% endif %}" href="{% url 'foodie_app:add_recipe_no_genre' %}">Add Recipe</a>
+          <a class="nav-link{% if request.resolver_match.url_name == 'add_recipe_no_context' %} active{% endif %}" href="{% url 'foodie_app:add_recipe_no_context' %}">Agregar receta</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'all_recipes' %} active{% endif %}" href="{% url 'recipes:all_recipes' %}">All Recipes</a>
+          <a class="nav-link{% if request.resolver_match.url_name == 'all_recipes' %} active{% endif %}" href="{% url 'recipes:all_recipes' %}">Todas las recetas</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'favorite_recipes' %} active{% endif %}" href="{% url 'recipes:favorite_recipes' %}">Favorite Recipes</a>
+          <a class="nav-link{% if request.resolver_match.url_name == 'favorite_recipes' %} active{% endif %}" href="{% url 'recipes:favorite_recipes' %}">Recetas favoritas</a>
         </li>
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0">
@@ -147,22 +147,22 @@
               {% load static %}
               <img src="{% static 'accounts/images/default_profile.jpg' %}" alt="Profile Picture" class="rounded-circle me-2" style="width:32px; height:32px; object-fit:cover;">
             {% endif %}
-            <span class="welcome-msg">Welcome, {{ user.username }}!</span>
+            <span class="welcome-msg">Bienvenido, {{ user.username }}!</span>
           </li>
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'edit_user_profile' %} active{% endif %}" href="{% url 'accounts:edit_user_profile' %}">Edit Profile</a>
+            <a class="nav-link{% if request.resolver_match.url_name == 'edit_user_profile' %} active{% endif %}" href="{% url 'accounts:edit_user_profile' %}">Editar perfil</a>
           </li>
           <li class="nav-item">
             <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">{% csrf_token %}
-                <button type="submit" class="nav-link btn btn-link text-danger d-flex justify-content-center align-items-center" style="width: 100%;">Logout</button>
+                <button type="submit" class="nav-link btn btn-link text-danger d-flex justify-content-center align-items-center" style="width: 100%;">Cerrar sesión</button>
             </form>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}">Login</a>
+            <a class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}">Iniciar sesión</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'register' %} active{% endif %}" href="{% url 'accounts:register' %}">Register</a>
+            <a class="nav-link{% if request.resolver_match.url_name == 'register' %} active{% endif %}" href="{% url 'accounts:register' %}">Registrarse</a>
           </li>
         {% endif %}
       </ul>
@@ -172,15 +172,15 @@
 
 <main>
   <div class="container">
-    <h1 class="my-4">Welcome to Foodie</h1>
-    <p class="lead">Your one-stop solution for all your recipe needs.</p>
+    <h1 class="my-4">Bienvenido a Foodie</h1>
+    <p class="lead">Tu solución integral para todas tus necesidades de recetas.</p>
     {% block content %}
     {% endblock content %}
   </div>
 </main>
 <footer class="footer">
   <div class="container">
-    <p class="mb-0 text-muted">&copy; {{ now|date:"Y" }} Foodie. All rights reserved.</p>
+    <p class="mb-0 text-muted">&copy; {{ now|date:"Y" }} Foodie. Todos los derechos reservados.</p>
   </div>
 </footer>
 
