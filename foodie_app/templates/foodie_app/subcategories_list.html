@@ -1,22 +1,152 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-{% block content %}
-<h2>Subcategorías de: {{ category.name }}</h2>
+{% block extra_head %}
+<style>
+    /* Estilo de la tarjeta de subcategoría */
+    .subcategory-card {
+        border: none;
+        border-radius: 15px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-left: 5px solid #2196c8; /* Acento azul a la izquierda */
+    }
 
-{% for subcategory in subcategories %}
-<div class="card" style="width: 18rem;">
-    <div class="card-body">
-        <h4 class="card-title">
-            <a href="{% url 'foodie_app:subcategory_recipes' subcategory.id %}" class="text-decoration-none" style="color: #2196c8ff;">
-                {{ subcategory.name }}
-            </a>
-        </h4>
-        <p class="card-subtitle">Descripción: {{ subcategory.description }}</p>
+    .subcategory-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(33, 150, 200, 0.15);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        flex: 1;
+    }
+
+    .subcat-title {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 1.25rem;
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .subcat-title:hover {
+        color: #2196c8;
+    }
+
+    .subcat-desc {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Footer de la tarjeta con botones */
+    .card-actions {
+        padding: 1rem 1.5rem;
+        background-color: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        border-radius: 0 0 15px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-view {
+        color: #2196c8;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .btn-view:hover { color: #0c4a6e; }
+
+    .btn-add-mini {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-add-mini:hover {
+        background-color: #2196c8;
+        color: white;
+    }
+
+    /* Cabecera de la página */
+    .page-header-custom {
+        margin-bottom: 3rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="page-header-custom">
+        <div>
+            <div class="text-uppercase text-muted small fw-bold mb-1">Categoría</div>
+            <h2 class="display-6 fw-bold text-dark mb-0">
+                {{ category.name }}
+            </h2>
+        </div>
+        <a href="{% url 'foodie_app:index' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Volver a Categorías
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for subcategory in subcategories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="subcategory-card">
+                    <div class="card-body">
+                        <a href="{% url 'foodie_app:subcategory_recipes' subcategory.id %}" class="subcat-title">
+                            {{ subcategory.name }}
+                        </a>
+                        
+                        {% if subcategory.description %}
+                            <p class="subcat-desc mb-0">{{ subcategory.description|truncatechars:80 }}</p>
+                        {% else %}
+                            <p class="subcat-desc mb-0 fst-italic opacity-50">Sin descripción disponible.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="{% url 'foodie_app:subcategory_recipes' subcategory.id %}" class="btn-view">
+                            Ver Recetas <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                        
+                        <a href="{% url 'foodie_app:add_recipe_to_subcategory' subcategory.id %}" class="btn-add-mini" title="Agregar receta aquí">
+                            <i class="bi bi-plus-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+                    <i class="bi bi-folder-x text-muted" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3 fw-bold text-muted">Esta categoría está vacía</h4>
+                    <p class="text-muted">No se han definido subcategorías todavía.</p>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
-<br>
-{% empty %}
-    <p class="card-text">No hay subcategorías definidas aún para esta categoría.</p>
-{% endfor %}
 {% endblock content %}

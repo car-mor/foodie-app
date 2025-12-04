@@ -1,186 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recetas</title>
+  <title>Foodie</title>
+  
   {% load django_bootstrap5 %}
   {% bootstrap_css %}
   {% load static %}
   {% bootstrap_javascript %}
+  
+  {% block extra_head %}{% endblock %}
+  
   <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<style>
+  <style>
+    /* 1. Estilos Generales */
     body {
       background-color: #f8fafc;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      font-family: system-ui, -apple-system, sans-serif;
     }
-    main {
-      flex: 1 0 auto;
-      padding-top: 2rem;
-      padding-bottom: 2rem;
+
+    /* 2. PARCHE DE VISIBILIDAD (Esto arregla el parpadeo) */
+@media (min-width: 992px) {
+    /* Solo en desktop: forzar visibilidad */
+    #navbarContent {
+        display: flex !important;
+        flex-basis: auto !important;
+        visibility: visible !important;
     }
-    .footer {
-      flex-shrink: 0;
-      background: #fff;
-      text-align: center;
-      padding: 1rem 0;
-      border-top: 1px solid #dee2e6;
-      margin-top: 2rem;
+}
+
+/* En móvil: permitir que Bootstrap funcione normalmente */
+@media (max-width: 991.98px) {
+    /* No forzar nada - dejar que Bootstrap controle */
+}
+
+    /* 3. Estilos del Navbar */
+    .navbar {
+      background-color: #ffffff !important; /* Fondo blanco forzado */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
     }
+
     .navbar-brand {
-      font-weight: bold;
+      font-weight: 800;
       font-size: 1.5rem;
-      letter-spacing: 1px;
-      color: #2196c8ff;
+      color: #2196c8 !important;
     }
-    .navbar-brand:hover {
-      color: #5facf4ff;
-    }
-    .welcome-msg {
-      margin: 0 1rem 0 0;
-      color: #495057;
-      font-weight: 500;
-      align-self: center;
-    }
+
+    /* Color de los enlaces (Negro/Gris para que se vean sobre blanco) */
     .nav-link {
-      font-weight: 500;
-      padding: 0.5rem 1rem !important;
-      margin: 0 0.25rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
+      color: #4b5563 !important; 
+      font-weight: 600;
+      margin: 0 0.5rem;
     }
     .nav-link:hover {
-      background-color: #f0f8fdff;
-      color: #2196c8ff !important;
+      color: #2196c8 !important;
     }
-    .nav-link.active {
-      background-color: #2196c8ff;
-      color: #fff !important;
-    }
-    .nav-link.active:hover {
-      background-color: #71d1fdff;
-    }
-    .btn-logout {
-      font-weight: 500;
-      padding: 0.5rem 1rem !important;
-      margin: 0 0.25rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-      border: none;
-      background-color: transparent;
-      color: #dc2626 !important;
-    }
-    .btn-logout:hover {
-      background-color: #fee2e2;
-      color: #b91c1c !important;
-    }
-    .search-form-wrapper {
+
+    /* 4. Buscador */
+    .search-group {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-right: 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 300px; /* Ancho máximo para no romper el menú */
     }
-    .search-form-wrapper input {
-      border-radius: 0.5rem;
-      border: 1px solid #d1d5db;
-      padding: 0.5rem 0.75rem;
-    }
-    .search-form-wrapper input:focus {
-      border-color: #2196c8ff;
-      box-shadow: 0 0 0 3px rgba(60, 200, 232, 0.1);
-    }
-    .search-form-wrapper button {
-      border-radius: 0.5rem;
+    .search-group input {
+      border: none;
+      box-shadow: none;
       padding: 0.5rem 1rem;
-      font-weight: 500;
-      background-color: #52aee7ff;
-      border-color: #2196c8ff;
-      transition: all 0.3s ease;
     }
-    .search-form-wrapper button:hover {
-      background-color: #63d6f0ff;
-      border-color: #25a1d2ff;
-      transform: translateY(-1px);
+    .search-group input:focus {
+      box-shadow: none;
+    }
+    .search-btn {
+      background-color: #2196c8;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+    }
+    .search-btn:hover {
+      background-color: #1a7ca8;
+    }
+
+    /* Footer */
+    main { flex: 1 0 auto; }
+    .footer {
+      flex-shrink: 0;
+      background: white;
+      padding: 2rem 0;
+      text-align: center;
+      border-top: 1px solid #eee;
+      margin-top: 3rem;
     }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'foodie_app:index' %}">Foodie</a>
+    
+    <a class="navbar-brand" href="{% url 'foodie_app:index' %}">
+      <i class="bi bi-egg-fried"></i> Foodie
+    </a>
 
-<form class="d-flex search-form-wrapper" action="{% url 'recipes:search_results' %}" method="get">
-    {% csrf_token %}
-    {% bootstrap_field search_form.query %}
-    <button type="submit">Buscar</button>
-</form>
-
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="{% url 'foodie_app:index' %}">Inicio</a>
+          <a class="nav-link" href="{% url 'foodie_app:index' %}">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'add_recipe_no_context' %} active{% endif %}" href="{% url 'foodie_app:add_recipe_no_context' %}">Agregar receta</a>
+          <a class="nav-link" href="{% url 'foodie_app:add_recipe_no_context' %}">Nueva Receta</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'all_recipes' %} active{% endif %}" href="{% url 'recipes:all_recipes' %}">Todas las recetas</a>
+          <a class="nav-link" href="{% url 'recipes:all_recipes' %}">Explorar</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link{% if request.resolver_match.url_name == 'favorite_recipes' %} active{% endif %}" href="{% url 'recipes:favorite_recipes' %}">Recetas favoritas</a>
+            <a class="nav-link" href="{% url 'recipes:favorite_recipes' %}">Mis Favoritas</a>
         </li>
       </ul>
-      <ul class="navbar-nav mb-2 mb-lg-0">
+
+      <form class="search-group me-3 mb-3 mb-lg-0" action="{% url 'recipes:search_results' %}" method="get">
+        <input class="form-control" type="search" name="query" placeholder="Buscar receta..." aria-label="Search">
+        <button class="search-btn" type="submit"><i class="bi bi-search"></i></button>
+      </form>
+
+      <ul class="navbar-nav">
         {% if user.is_authenticated %}
           <li class="nav-item d-flex align-items-center">
-            {% if user.profile.profile_photo %}
-              <img src="{{ user.profile.profile_photo.url }}" alt="Profile Picture" class="rounded-circle me-2" style="width:32px; height:32px; object-fit:cover;">
-            {% else %}
-              {% load static %}
-              <img src="{% static 'accounts/images/default_profile.jpg' %}" alt="Profile Picture" class="rounded-circle me-2" style="width:32px; height:32px; object-fit:cover;">
-            {% endif %}
-            <span class="welcome-msg">Bienvenido, {{ user.username }}!</span>
+            <span class="nav-link" style="cursor: default;">Hola, {{ user.username }}</span>
           </li>
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'edit_user_profile' %} active{% endif %}" href="{% url 'accounts:edit_user_profile' %}">Editar perfil</a>
+            <a class="nav-link" href="{% url 'accounts:edit_user_profile' %}">Perfil</a>
           </li>
           <li class="nav-item">
-            <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">{% csrf_token %}
-                <button type="submit" class="nav-link btn btn-link text-danger d-flex justify-content-center align-items-center" style="width: 100%;">Cerrar sesión</button>
+            <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">
+               {% csrf_token %}
+               <button type="submit" class="nav-link btn btn-link text-danger" style="text-decoration: none;">Salir</button>
             </form>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}">Iniciar sesión</a>
+            <a class="nav-link" href="{% url 'accounts:login' %}">Iniciar Sesión</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link{% if request.resolver_match.url_name == 'register' %} active{% endif %}" href="{% url 'accounts:register' %}">Registrarse</a>
+            <a class="btn btn-primary btn-sm ms-2 rounded-pill px-3" style="background-color: #2196c8; border:none;" href="{% url 'accounts:register' %}">Registro</a>
           </li>
         {% endif %}
       </ul>
+
     </div>
   </div>
 </nav>
 
 <main>
-  <div class="container">
-    <h1 class="my-4">Bienvenido a Foodie</h1>
-    <p class="lead">Tu solución integral para todas tus necesidades de recetas.</p>
-    {% block content %}
-    {% endblock content %}
-  </div>
+    {% block page_header %}{% endblock %}
+    
+    <div class="w-100">
+        {% block content %}{% endblock %}
+    </div>
 </main>
+
 <footer class="footer">
-  <div class="container">
-    <p class="mb-0 text-muted">&copy; {{ now|date:"Y" }} Foodie. Todos los derechos reservados.</p>
+  <div class="container text-muted">
+    <small>&copy; {% now "Y" %} Foodie. Hecho con sabor.</small>
   </div>
 </footer>
 

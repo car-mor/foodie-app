@@ -1,34 +1,209 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
+{% block extra_head %}
+<style>
+    /* Reutilizamos los estilos de tarjeta Foodie para consistencia */
+    .recipe-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        background: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .recipe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(33, 150, 200, 0.15);
+    }
+
+    /* Imagen */
+    .recipe-img-container {
+        height: 200px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        background-color: #f8fafc;
+        display: block;
+    }
+
+    .recipe-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .recipe-card:hover .recipe-img {
+        transform: scale(1.05);
+    }
+
+    /* Etiquetas */
+    .badge-category {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.35em 0.8em;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Cuerpo */
+    .card-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .recipe-title {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+        line-height: 1.3;
+    }
+    
+    .recipe-title:hover { color: #2196c8; }
+
+    .recipe-meta {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .recipe-desc {
+        color: #475569;
+        font-size: 0.95rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Botón */
+    .btn-view-recipe {
+        margin-top: auto;
+        background-color: white;
+        color: #2196c8;
+        border: 1px solid #2196c8;
+        border-radius: 8px;
+        padding: 0.6rem;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+    }
+    
+    .btn-view-recipe:hover {
+        background-color: #2196c8;
+        color: white;
+    }
+
+    /* Estilos Header Búsqueda */
+    .search-header {
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .search-term {
+        color: #2196c8;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+    /* Empty State */
+    .no-results-box {
+        text-align: center;
+        padding: 5rem 1rem;
+    }
+    .no-results-icon {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Resultados de búsqueda</h2>
-    {% if query %}
-        <p class="mb-4">Mostrando resultados para: <strong>{{ query }}</strong></p>
-    {% endif %}
-    <div class="row">
+<div class="container py-5">
+    
+    <div class="search-header">
+        <h2 class="fw-bold text-dark mb-2">Resultados de búsqueda</h2>
+        {% if query %}
+            <p class="text-muted fs-5 mb-0">
+                Mostrando resultados para: <span class="search-term">"{{ query }}"</span>
+            </p>
+        {% else %}
+            <p class="text-muted mb-0">Mostrando todas las recetas recientes</p>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
         {% for recipe in recipes %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title text-center" style="color: #2196c8ff;">Título: {{ recipe.title }}</h5>
+            <div class="col-md-6 col-lg-4">
+                <div class="recipe-card">
+                    
+                    <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="recipe-img-container">
                         {% if recipe.image %}
-                            <img src="{{ recipe.image.url }}" class="card-img-top mb-3" alt="{{ recipe.title }}" width="100%" height="200">
+                            <img src="{{ recipe.image.url }}" class="recipe-img" alt="{{ recipe.title }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80" class="recipe-img" alt="Comida">
                         {% endif %}
-                        <p class="card-text">Descripción: {{ recipe.description }}</p>
-                        <h6>Categoría: {{ recipe.category.name }}</h6>
-                        <p>Subcategoría: {{ recipe.subcategory.name }}</p>
-                        <p class="card-text">Creado por: {{ recipe.user.username }}</p>
-                        <p class="card-text"><small class="text-muted">Agregado el {{ recipe.date_added|date:"M d, Y H:i" }}</small></p>
-                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn btn-primary">Ver detalles</a>
+                    </a>
+
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge-category">{{ recipe.category.name }}</span>
+                            <small class="text-muted ms-1">• {{ recipe.subcategory.name }}</small>
+                        </div>
+
+                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="recipe-title">
+                            {{ recipe.title }}
+                        </a>
+
+                        <div class="recipe-meta mt-2">
+                            <i class="bi bi-person-circle me-1"></i> {{ recipe.user.username }}
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-clock me-1"></i> {{ recipe.date_added|date:"d M, Y" }}
+                        </div>
+
+                        <p class="recipe-desc">
+                            {{ recipe.description|truncatechars:90 }}
+                        </p>
+
+                        <a href="{% url 'recipes:recipe_detail' recipe.id %}" class="btn-view-recipe">
+                            Ver Receta
+                        </a>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="alert alert-info" role="alert">
-                    No se encontraron recetas para "{{ query }}".
+                <div class="no-results-box">
+                    <i class="bi bi-search no-results-icon"></i>
+                    <h3 class="fw-bold text-dark mt-3">No encontramos nada para "{{ query }}"</h3>
+                    <p class="text-muted">Intenta con otra palabra clave o explora todas nuestras categorías.</p>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'recipes:all_recipes' %}" class="btn btn-primary rounded-pill px-4 py-2 me-2" style="background-color: #2196c8; border:none;">
+                            Ver todas las recetas
+                        </a>
+                        <a href="{% url 'foodie_app:index' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            Ir al Inicio
+                        </a>
+                    </div>
                 </div>
             </div>
         {% endfor %}

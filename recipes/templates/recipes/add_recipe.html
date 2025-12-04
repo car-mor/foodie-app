@@ -1,137 +1,237 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
+{% block extra_head %}
+<style>
+    /* Estilos específicos para el formulario de recetas */
+    .recipe-form-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    
+    .form-header {
+        background-color: #ffffff;
+        padding: 2rem 2rem 1rem;
+        text-align: center;
+    }
+    
+    .form-icon-circle {
+        width: 60px;
+        height: 60px;
+        background-color: #e0f2fe;
+        color: #2196c8;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-classification {
+        background-color: #f8fafc; /* Fondo gris muy suave para diferenciar */
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .btn-submit {
+        background-color: #2196c8;
+        border: none;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        border-radius: 10px;
+        width: 100%;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-submit:hover {
+        background-color: #1a7ca8;
+    }
+
+    .context-banner {
+        background-color: #e0f2fe;
+        border-left: 5px solid #2196c8;
+        color: #0c4a6e;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}{% endblock %}
+
 {% block content %}
-    {% block page_header %}
-        <h2>Agregar una nueva receta</h2>
-    {% endblock page_header %}
-
-    <div class="mb-3">
-        {% if lock_fields %}
-            <p>
-                Receta para la categoría <strong>{{ category.name }}</strong> en la subcategoría <strong>{{ subcategory.name }}</strong>.
-                (La categoría y subcategoría se asignarán automáticamente).
-            </p>
-        {% endif %}
-    </div>
-
-    <div>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            {% if not lock_fields %}
-                <div class="alert alert-info">
-                    Selecciona primero una <strong>Categoría</strong> para habilitar las <strong>Subcategorías</strong> relacionadas.
-                </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="card recipe-form-card">
                 
-                {# Renderizar Category y Subcategory usando solo la variable #}
-                <div class="mb-3">
-                    {{ form.category.label_tag }}
-                    {# 🚨 CORRECCIÓN: Usar {{ form.category }} y delegar los attrs a forms.py #}
-                    {{ form.category }} 
-                    {% for error in form.category.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                <div class="form-header">
+                    <div class="form-icon-circle">
+                        <i class="bi bi-journal-plus"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark">Nueva Receta</h2>
+                    <p class="text-muted">Comparte tu creación culinaria con el mundo</p>
                 </div>
 
-                <div class="mb-3">
-                    {{ form.subcategory.label_tag }}
-                    {# 🚨 CORRECCIÓN: Usar {{ form.subcategory }} #}
-                    {{ form.subcategory }}
-                    {% for error in form.subcategory.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                
-                {# Renderizar el resto de los campos con {% bootstrap_field %} #}
-                {% for field in form %}
-                    {% if field.name != 'category' and field.name != 'subcategory' %}
-                        {% bootstrap_field field %}
+                <div class="card-body p-4 p-md-5 pt-2">
+                    
+                    {% if lock_fields %}
+                        <div class="context-banner d-flex align-items-center">
+                            <i class="bi bi-lock-fill fs-4 me-3"></i>
+                            <div>
+                                <small class="text-uppercase fw-bold opacity-75">Ubicación Fija</small>
+                                <div class="mb-0">
+                                    Agregando a: <strong>{{ category.name }}</strong> <i class="bi bi-chevron-right mx-1 small"></i> <strong>{{ subcategory.name }}</strong>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
-                {% endfor %}
 
-            {% else %}
-                {# Flujo con contexto: Usar {% bootstrap_form form %} ya que los campos C/S están excluidos/ocultos #}
-                {% bootstrap_form form %}
-            {% endif %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-            {% bootstrap_button "Guardar receta" button_type="submit" %}
-        </form>
+                        <div class="section-classification">
+                            {% if not lock_fields %}
+                                <div class="mb-3 text-muted small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Selecciona primero una Categoría para ver sus opciones.
+                                </div>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.category.label }}</label>
+                                        {{ form.category }} 
+                                        {% for error in form.category.errors %}
+                                            <div class="text-danger small mt-1">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.subcategory.label }}</label>
+                                        {{ form.subcategory }}
+                                        {% for error in form.subcategory.errors %}
+                                            <div class="text-danger small mt-1">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-center text-muted mb-0 fst-italic">
+                                    La clasificación está predefinida por la página anterior.
+                                </p>
+                                {% for field in form.hidden_fields %}
+                                    {{ field }}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-4">
+                            {% for field in form %}
+                                {% if field.name != 'category' and field.name != 'subcategory' %}
+                                    <div class="col-12">
+                                        {% bootstrap_field field %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-submit btn-lg shadow-sm">
+                                <i class="bi bi-check2-circle me-2"></i> Guardar Receta
+                            </button>
+                            <a href="javascript:history.back()" class="btn btn-light text-muted">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
 
-    {# ---------------------------------------------------------------- #}
-    {# 3. JAVASCRIPT/AJAX para el Flujo Sin Contexto #}
-    {# ---------------------------------------------------------------- #}
-    {% if not lock_fields %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // IDs de los selects (deben coincidir con el HTML)
-            const categorySelect = document.getElementById('id_category'); 
-            const subcategorySelect = document.getElementById('id_subcategory');
-            
-            // Valor inicial de subcategoría (en caso de error de POST)
-            const initialSubcategoryId = subcategorySelect.value;
-            
-            // 1. Inicialización (Deshabilitar Subcategoría)
+{# ---------------------------------------------------------------- #}
+{# 3. JAVASCRIPT/AJAX (Se mantiene igual, solo se ejecuta si no está bloqueado) #}
+{# ---------------------------------------------------------------- #}
+{% if not lock_fields %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // IDs generados por Django (id_nombrecampo)
+        const categorySelect = document.getElementById('id_category'); 
+        const subcategorySelect = document.getElementById('id_subcategory');
+        
+        // Valor inicial (en caso de error de validación al recargar)
+        const initialSubcategoryId = subcategorySelect.value;
+        
+        // 1. Inicialización Visual
+        if (!categorySelect.value) {
             subcategorySelect.disabled = true; 
             subcategorySelect.innerHTML = '<option value="">Primero selecciona una Categoría</option>';
+        } else {
+            // Si ya hay categoría (por error de post), cargamos
+            loadSubcategories(categorySelect.value, initialSubcategoryId);
+        }
 
-            // Si hay una categoría seleccionada (por un POST fallido), cargar subcategorías
-            if (categorySelect.value) {
-                loadSubcategories(categorySelect.value, initialSubcategoryId);
-            }
-
-            // 2. Escuchar el cambio en la Categoría
-            categorySelect.addEventListener('change', function() {
-                const categoryId = this.value;
-                
-                if (categoryId) {
-                    loadSubcategories(categoryId);
-                } else {
-                    // Si se deselecciona la Categoría
-                    subcategorySelect.disabled = true;
-                    subcategorySelect.innerHTML = '<option value="">Primero selecciona una Categoría</option>';
-                }
-            });
-
-            // 3. Función AJAX para cargar Subcategorías
-            function loadSubcategories(categoryId, selectedSubcategoryId = null) {
-                // La URL debe ser la que definimos en urls.py
-                const url = "{% url 'foodie_app:ajax_load_subcategories' %}";
-                const params = new URLSearchParams({
-                    'category_id': categoryId
-                });
-
-                fetch(`${url}?${params}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Limpiar y rellenar el select de Subcategoría
-                        subcategorySelect.innerHTML = '<option value="">Selecciona una Subcategoría</option>';
-                        
-                        data.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.id;
-                            option.textContent = item.name;
-                            
-                            // Mantener la selección después de un POST fallido
-                            if (selectedSubcategoryId && String(item.id) === String(selectedSubcategoryId)) {
-                                option.selected = true;
-                            }
-                            
-                            subcategorySelect.appendChild(option);
-                        });
-                        
-                        // Habilitar/Deshabilitar el select basado en si hay resultados
-                        if (data.length > 0) {
-                            subcategorySelect.disabled = false;
-                        } else {
-                             subcategorySelect.disabled = true;
-                             subcategorySelect.innerHTML = '<option value="">No hay Subcategorías en esta Categoría</option>';
-                        }
-                    })
-                    .catch(error => console.error('Error al cargar subcategorías:', error));
+        // 2. Escuchar cambios
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            if (categoryId) {
+                loadSubcategories(categoryId);
+            } else {
+                subcategorySelect.disabled = true;
+                subcategorySelect.innerHTML = '<option value="">Primero selecciona una Categoría</option>';
             }
         });
-    </script>
-    {% endif %}
+
+        // 3. Función AJAX
+        function loadSubcategories(categoryId, selectedSubcategoryId = null) {
+            const url = "{% url 'foodie_app:ajax_load_subcategories' %}";
+            const params = new URLSearchParams({ 'category_id': categoryId });
+
+            // Feedback visual de carga
+            subcategorySelect.innerHTML = '<option>Cargando...</option>';
+            subcategorySelect.disabled = true;
+
+            fetch(`${url}?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    subcategorySelect.innerHTML = '<option value="">Selecciona una Subcategoría</option>';
+                    
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        if (selectedSubcategoryId && String(item.id) === String(selectedSubcategoryId)) {
+                            option.selected = true;
+                        }
+                        subcategorySelect.appendChild(option);
+                    });
+                    
+                    if (data.length > 0) {
+                        subcategorySelect.disabled = false;
+                    } else {
+                        subcategorySelect.disabled = true;
+                        subcategorySelect.innerHTML = '<option value="">Sin subcategorías</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    subcategorySelect.innerHTML = '<option value="">Error al cargar</option>';
+                });
+        }
+    });
+</script>
+{% endif %}
+
 {% endblock content %}

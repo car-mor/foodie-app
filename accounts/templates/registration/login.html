@@ -1,10 +1,136 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block extra_head %}
+<style>
+    /* Fondo suave para la página de login */
+    body {
+        background-color: #f8fafc;
+    }
+
+    /* Tarjeta de Login */
+    .login-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+        background-color: white;
+    }
+
+    /* Encabezado con degradado suave */
+    .login-header {
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+        padding: 2.5rem 2rem 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Círculo del Icono */
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        background-color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #2196c8;
+        font-size: 2rem;
+        box-shadow: 0 4px 15px rgba(33, 150, 200, 0.15);
+        margin-bottom: 1rem;
+    }
+
+    .login-title {
+        color: #0f172a;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Botón de envío */
+    .btn-login {
+        background-color: #2196c8;
+        border: none;
+        padding: 0.8rem;
+        font-weight: 600;
+        border-radius: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(33, 150, 200, 0.2);
+    }
+    
+    .btn-login:hover {
+        background-color: #1a7ca8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(33, 150, 200, 0.3);
+    }
+
+    /* Enlaces del pie */
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    
+    .login-footer a {
+        color: #2196c8;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-  <h2>Login</h2>
-  <form action="{% url "accounts:login" %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log in</button>
-  </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            
+            <div class="card login-card">
+                
+                <div class="login-header">
+                    <div class="icon-circle">
+                        <i class="bi bi-person-fill-lock"></i>
+                    </div>
+                    <h3 class="login-title">¡Qué gusto verte!</h3>
+                    <p class="text-muted mb-0">Ingresa a tu cuenta Foodie</p>
+                </div>
+
+                <div class="card-body p-4 pt-4">
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>Usuario o contraseña incorrectos.</div>
+                        </div>
+                    {% endif %}
+
+                    <form action="{% url 'accounts:login' %}" method="post">
+                        {% csrf_token %}
+                        
+                        {% bootstrap_form form show_label=True %}
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-login">
+                                Iniciar Sesión <i class="bi bi-arrow-right-short ms-1"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="login-footer">
+                        <p class="mb-2">
+                            ¿Aún no tienes cuenta? 
+                            <a href="{% url 'accounts:register' %}">Regístrate aquí</a>
+                        </p>
+                        
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock content %}

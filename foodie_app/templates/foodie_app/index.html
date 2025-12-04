@@ -1,21 +1,168 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-{% block content %}
-<h3>Categorías Principales</h3>
+{% block extra_head %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2196c8',
+                        'primary-dark': '#1976a8',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .foodie-card {
+            animation-fill-mode: both;
+        }
+        
+        .foodie-card:nth-child(1) { animation-delay: 0.1s; }
+        .foodie-card:nth-child(2) { animation-delay: 0.2s; }
+        .foodie-card:nth-child(3) { animation-delay: 0.3s; }
+        .foodie-card:nth-child(4) { animation-delay: 0.4s; }
+        .foodie-card:nth-child(5) { animation-delay: 0.5s; }
+        .foodie-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+{% endblock %}
 
-<ul class="list-group">
-    {% for category in categories %}
-        <li class="list-group-item">
-            <a href="{% url 'foodie_app:category_detail' category.id %}" class="text-decoration-none">
-                <div class="d-flex justify-content-between align-items-center w-100 py-2">
-                    <span class="fw-bold fs-5" style="color: #2196c8ff;">{{ category.name }}</span>
-                    <span class="text-muted small">&rsaquo;</span>
+{% block content %}
+<div class="bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 py-16 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4 shadow-lg">
+            <i class="bi bi-egg-fried text-white text-3xl"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            ¿Qué vamos a cocinar hoy?
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Explora nuestras categorías de recetas y descubre nuevos sabores
+        </p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for category in categories %}
+            <a href="{% url 'foodie_app:category_detail' category.id %}" 
+               class="foodie-card animate-fade-in-up group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                
+                <div class="relative overflow-hidden h-56">
+                    {% with name=category.name|lower %}
+                        {% if "plato" in name or "curso" in name %}
+                            <img src="https://images.pexels.com/photos/30211370/pexels-photo-30211370.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% elif "diet" in name or "salud" in name %}
+                            <img src="https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% elif "ingrediente" in name %}
+                            <img src="https://images.pexels.com/photos/3026802/pexels-photo-3026802.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% elif "tiempo" in name or "ocasión" in name %}
+                            <img src="https://images.pexels.com/photos/1682344/pexels-photo-1682344.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% elif "cocción" in name or "electro" in name %}
+                            <img src="https://images.pexels.com/photos/3992206/pexels-photo-3992206.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% elif "internacional" in name or "regiones" in name %}
+                            <img src="https://images.pexels.com/photos/1098515/pexels-photo-1098515.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% else %}
+                            <img src="https://images.pexels.com/photos/708488/pexels-photo-708488.jpeg" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                 alt="{{ category.name }}" 
+                                 loading="lazy">
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+
+                <div class="p-6">
+                    <div class="flex items-start gap-3 mb-3">
+                        {% with name=category.name|lower %}
+                            {% if "plato" in name or "curso" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-egg-fried text-orange-600 text-lg"></i>
+                                </div>
+                            {% elif "diet" in name or "salud" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-heart-pulse text-green-600 text-lg"></i>
+                                </div>
+                            {% elif "ingrediente" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-basket text-purple-600 text-lg"></i>
+                                </div>
+                            {% elif "tiempo" in name or "ocasión" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-clock text-blue-600 text-lg"></i>
+                                </div>
+                            {% elif "cocción" in name or "electro" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-fire text-red-600 text-lg"></i>
+                                </div>
+                            {% elif "internacional" in name or "regiones" in name %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-globe text-indigo-600 text-lg"></i>
+                                </div>
+                            {% else %}
+                                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                                    <i class="bi bi-bookmark text-gray-600 text-lg"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <h5 class="text-xl font-bold text-gray-900 leading-tight flex-1">
+                            {{ category.name }}
+                        </h5>
+                    </div>
+                    
+                    <div class="flex items-center text-primary font-semibold text-sm group-hover:gap-2 gap-1 transition-all duration-300">
+                        <span>Ver subcategorías</span>
+                        <i class="bi bi-arrow-right text-base group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </div>
                 </div>
             </a>
-        </li>
-    {% empty %}
-        <li class="list-group-item text-muted">No hay categorías disponibles.</li>
-    {% endfor %}
-</ul>
+        {% empty %}
+            <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                    <i class="bi bi-inbox text-5xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-2">No hay categorías disponibles</h3>
+                <p class="text-gray-500">Las categorías aparecerán aquí cuando estén listas.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock content %}
